@@ -122,9 +122,4 @@ MIT License
 
 **time_for_anywhere** - 어디서나 사용할 수 있는 아름다운 시계 위젯# time_for_anywhere
 # time_for_anywhere
-# time_for_anywhere
-# time_for_anywhere
-# time_for_anywhere
-# time_for_anywhere
-# time_for_anywhere
-# time_for_anywhere
+
