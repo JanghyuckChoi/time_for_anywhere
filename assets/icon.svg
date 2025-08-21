@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#357abd;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 배경 원 -->
+  <circle cx="128" cy="128" r="120" fill="url(#grad1)" stroke="#2c3e50" stroke-width="8"/>
+  
+  <!-- 시계 테두리 -->
+  <circle cx="128" cy="128" r="100" fill="none" stroke="#ecf0f1" stroke-width="4"/>
+  
+  <!-- 시계 숫자들 -->
+  <text x="128" y="50" text-anchor="middle" fill="#ecf0f1" font-family="Arial" font-size="24" font-weight="bold">12</text>
+  <text x="200" y="128" text-anchor="middle" fill="#ecf0f1" font-family="Arial" font-size="24" font-weight="bold">3</text>
+  <text x="128" y="210" text-anchor="middle" fill="#ecf0f1" font-family="Arial" font-size="24" font-weight="bold">6</text>
+  <text x="56" y="128" text-anchor="middle" fill="#ecf0f1" font-family="Arial" font-size="24" font-weight="bold">9</text>
+  
+  <!-- 시계 바늘들 -->
+  <!-- 시침 -->
+  <line x1="128" y1="128" x2="128" y2="80" stroke="#e74c3c" stroke-width="6" stroke-linecap="round"/>
+  <!-- 분침 -->
+  <line x1="128" y1="128" x2="160" y2="128" stroke="#f39c12" stroke-width="4" stroke-linecap="round"/>
+  <!-- 초침 -->
+  <line x1="128" y1="128" x2="128" y2="60" stroke="#3498db" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- 중앙 점 -->
+  <circle cx="128" cy="128" r="8" fill="#ecf0f1"/>
+</svg>

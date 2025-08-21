@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyTime - Standalone Clock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 기본 리셋 및 폰트 설정 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 스크롤바 숨기기 */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', 'Courier New', monospace;
+            background: #000000;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* GPU acceleration */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        /* Main clock widget container - perfectly centered */
+        .clock-widget {
+            width: 380px;
+            height: 270px;
+            background: #000000;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            /* GPU acceleration */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            /* Animation optimization */
+            will-change: transform;
+        }
+
+        /* Clock display container - centered and compact */
+        .clock-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            /* GPU acceleration */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+
+        /* Time separator - compact design */
+        .time-separator {
+            color: #e0e0e0;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0 4px;
+            animation: pulse 2s infinite;
+            /* GPU acceleration */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                opacity: 1; 
+                -webkit-transform: translateZ(0) scale(1);
+                transform: translateZ(0) scale(1);
+            }
+            50% { 
+                opacity: 0.7; 
+                -webkit-transform: translateZ(0) scale(1.05);
+                transform: translateZ(0) scale(1.05);
+            }
+        }
+
+        /* Time modules (hours, minutes, seconds) */
+        .time-module {
+            width: 75px;
+            height: 90px;
+            perspective: 1000px;
+            /* GPU acceleration */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+
+        /* 플립 카드 */
+        .flip-card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            /* GPU 가속 활성화 */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            /* 애니메이션 최적화 */
+            will-change: transform;
+        }
+
+        .flip-card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+            -webkit-transition: -webkit-transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .flip-card.flipping .flip-card-inner {
+            -webkit-transform: translateZ(0) rotateX(-180deg);
+            transform: translateZ(0) rotateX(-180deg);
+        }
+
+        /* Flip card front and back */
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            font-weight: bold;
+            color: #e0e0e0;
+            background: #141414;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            /* GPU acceleration */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            /* Animation optimization */
+            will-change: transform;
+        }
+
+        .flip-card-back {
+            -webkit-transform: translateZ(0) rotateX(180deg);
+            transform: translateZ(0) rotateX(180deg);
+            background: #1e1e1e;
+        }
+
+        /* 플립 카드 중간 구분선 */
+        .flip-card-front::after,
+        .flip-card-back::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            -webkit-transform: translateZ(0) translateY(-50%);
+            transform: translateZ(0) translateY(-50%);
+        }
+
+        /* 컨트롤 버튼들 */
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            /* GPU 가속 활성화 */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+
+        .control-btn {
+            min-width: 80px;
+            height: 36px;
+            padding: 0 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e0e0e0;
+            border-radius: 18px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            -webkit-transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            /* GPU acceleration */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            /* Animation optimization */
+            will-change: transform, background-color, border-color;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            -webkit-transform: translateZ(0) scale(1.05);
+            transform: translateZ(0) scale(1.05);
+        }
+
+        .control-btn:active {
+            -webkit-transform: translateZ(0) scale(0.95);
+            transform: translateZ(0) scale(0.95);
+        }
+
+        /* 애니메이션 효과 - GPU 가속 최적화 */
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                -webkit-transform: translateZ(0) translateY(-20px);
+                transform: translateZ(0) translateY(-20px);
+            }
+            to { 
+                opacity: 1; 
+                -webkit-transform: translateZ(0) translateY(0);
+                transform: translateZ(0) translateY(0);
+            }
+        }
+
+        .clock-widget {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+            -webkit-animation: fadeIn 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 450px) {
+            .clock-widget {
+                width: 350px;
+                height: 250px;
+                padding: 15px;
+            }
+            
+            .time-module {
+                width: 65px;
+                height: 80px;
+            }
+            
+            .flip-card-front,
+            .flip-card-back {
+                font-size: 36px;
+            }
+        }
+
+        /* 성능 최적화를 위한 추가 스타일 */
+        .flip-card {
+            /* GPU 가속을 위한 추가 속성 */
+            -webkit-perspective: 1000px;
+            perspective: 1000px;
+            /* 애니메이션 중 리플로우 방지 */
+            contain: layout style paint;
+        }
+
+        /* 애니메이션 중 불필요한 리페인트 방지 */
+        .flip-card-front,
+        .flip-card-back {
+            contain: layout style paint;
+        }
+
+        /* 텍스트 렌더링 최적화 */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* 전체화면 모드 스타일 */
+        .fullscreen-info {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #e0e0e0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .fullscreen-info.show {
+            opacity: 1;
+        }
+
+        /* 키보드 단축키 정보 */
+        .shortcuts-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #e0e0e0;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 1000;
+            max-width: 200px;
+        }
+
+        .shortcuts-info.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- 전체화면 정보 -->
+    <div class="fullscreen-info" id="fullscreenInfo">
+        전체화면 모드 (ESC로 종료)
+    </div>
+
+    <!-- 키보드 단축키 정보 -->
+    <div class="shortcuts-info" id="shortcutsInfo">
+        <div>F11: 전체화면</div>
+        <div>Space: 모드 변경</div>
+        <div>H: 도움말 토글</div>
+        <div>ESC: 전체화면 종료</div>
+    </div>
+
+    <div class="clock-widget" id="clockWidget">
+        <!-- Main Clock Display -->
+        <div class="clock-display">
+            <div class="time-module" id="hoursModule">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front" id="hoursFront">12</div>
+                        <div class="flip-card-back" id="hoursBack">12</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="time-separator">:</div>
+            
+            <div class="time-module" id="minutesModule">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front" id="minutesFront">00</div>
+                        <div class="flip-card-back" id="minutesBack">00</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="time-separator">:</div>
+            
+            <div class="time-module" id="secondsModule">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front" id="secondsFront">00</div>
+                        <div class="flip-card-back" id="secondsBack">00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="control-buttons">
+            <button id="toggleMode" class="control-btn" title="시간 표시 모드 변경">NOW</button>
+            <button id="toggleFullscreen" class="control-btn" title="전체화면 토글">전체화면</button>
+            <button id="toggleHelp" class="control-btn" title="키보드 단축키 도움말">도움말</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements - cached once
+        const elements = {
+            clockWidget: document.getElementById('clockWidget'),
+            hoursModule: document.getElementById('hoursModule'),
+            minutesModule: document.getElementById('minutesModule'),
+            secondsModule: document.getElementById('secondsModule'),
+            
+            toggleModeBtn: document.getElementById('toggleMode'),
+            toggleFullscreenBtn: document.getElementById('toggleFullscreen'),
+            toggleHelpBtn: document.getElementById('toggleHelp'),
+            
+            fullscreenInfo: document.getElementById('fullscreenInfo'),
+            shortcutsInfo: document.getElementById('shortcutsInfo')
+        };
+
+        // 현재 시간 상태
+        let currentTime = {
+            hours: 0,
+            minutes: 0,
+            seconds: 0
+        };
+
+        // Performance optimization variables
+        let lastUpdateTime = 0;
+        let isAnimating = false;
+        let isInitialized = false;
+
+        // 시간 표시 모드 상태
+        let currentMode = 'now'; // 'now', '5pm', '6pm'
+        let remainingTimeInterval = null;
+
+        // 전체화면 및 도움말 상태
+        let isFullscreen = false;
+        let helpVisible = false;
+
+        // Initialize app
+        function initializeApp() {
+            // Load settings
+            loadSettings();
+            
+            // 초기 시계 표시
+            setTimeout(() => {
+                updateClock();
+                isInitialized = true;
+            }, 100);
+            
+            // Smooth clock updates using requestAnimationFrame
+            function animateClock() {
+                const now = Date.now();
+                if (now - lastUpdateTime >= 1000) {
+                    updateClock();
+                    lastUpdateTime = now;
+                }
+                requestAnimationFrame(animateClock);
+            }
+            
+            requestAnimationFrame(animateClock);
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            console.log('Standalone MyTime Clock initialized');
+        }
+
+        // 시계 업데이트 함수
+        function updateClock() {
+            if (currentMode === 'now') {
+                updateCurrentTime();
+            } else if (currentMode === '5pm') {
+                if (!remainingTimeInterval) {
+                    showRemainingTimeUntilTarget(17);
+                }
+            } else if (currentMode === '6pm') {
+                if (!remainingTimeInterval) {
+                    showRemainingTimeUntilTarget(18);
+                }
+            }
+        }
+
+        // 현재 시간 표시 (12시간제)
+        function updateCurrentTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            
+            // 12시간제로 변환
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            
+            const newTime = {
+                hours: hours,
+                minutes: minutes,
+                seconds: seconds
+            };
+            
+            // 초기 로딩 시에는 애니메이션 없이 바로 설정
+            if (!isInitialized || (currentTime.hours === 0 && currentTime.minutes === 0 && currentTime.seconds === 0)) {
+                setTimeDirectly(newTime);
+                return;
+            }
+            
+            // NOW 모드에서는 항상 현재 시간을 표시 (애니메이션 없이)
+            if (currentMode === 'now') {
+                setTimeDirectly(newTime);
+                return;
+            }
+            
+            // 다른 모드에서는 시간이 변경되었을 때만 플립 애니메이션 실행
+            if (newTime.hours !== currentTime.hours) {
+                flipTimeModule(elements.hoursModule, currentTime.hours, newTime.hours);
+                currentTime.hours = newTime.hours;
+            }
+            
+            if (newTime.minutes !== currentTime.minutes) {
+                flipTimeModule(elements.minutesModule, currentTime.minutes, newTime.minutes);
+                currentTime.minutes = newTime.minutes;
+            }
+            
+            if (newTime.seconds !== currentTime.seconds) {
+                flipTimeModule(elements.secondsModule, currentTime.seconds, newTime.seconds);
+                currentTime.seconds = newTime.seconds;
+            }
+        }
+
+        // 시간을 직접 설정 (애니메이션 없이)
+        function setTimeDirectly(newTime) {
+            const hoursFront = elements.hoursModule.querySelector('.flip-card-front');
+            const hoursBack = elements.hoursModule.querySelector('.flip-card-back');
+            const minutesFront = elements.minutesModule.querySelector('.flip-card-front');
+            const minutesBack = elements.minutesModule.querySelector('.flip-card-back');
+            const secondsFront = elements.secondsModule.querySelector('.flip-card-front');
+            const secondsBack = elements.secondsModule.querySelector('.flip-card-back');
+            
+            if (hoursFront && hoursBack && minutesFront && minutesBack && secondsFront && secondsBack) {
+                hoursFront.textContent = String(newTime.hours).padStart(2, '0');
+                hoursBack.textContent = String(newTime.hours).padStart(2, '0');
+                minutesFront.textContent = String(newTime.minutes).padStart(2, '0');
+                minutesBack.textContent = String(newTime.minutes).padStart(2, '0');
+                secondsFront.textContent = String(newTime.seconds).padStart(2, '0');
+                secondsBack.textContent = String(newTime.seconds).padStart(2, '0');
+                
+                currentTime = { ...newTime };
+            }
+        }
+
+        // 플립 애니메이션 함수
+        function flipTimeModule(module, oldValue, newValue) {
+            if (isAnimating) return;
+            
+            const flipCard = module.querySelector('.flip-card');
+            const front = module.querySelector('.flip-card-front');
+            const back = module.querySelector('.flip-card-back');
+            
+            if (oldValue === newValue) return;
+            
+            back.textContent = String(newValue).padStart(2, '0');
+            
+            flipCard.style.transform = 'rotateX(0deg)';
+            flipCard.style.transition = 'transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)';
+            
+            requestAnimationFrame(() => {
+                flipCard.style.transform = 'rotateX(-90deg)';
+                
+                setTimeout(() => {
+                    front.textContent = String(newValue).padStart(2, '0');
+                    flipCard.style.transform = 'rotateX(0deg)';
+                    
+                    setTimeout(() => {
+                        flipCard.style.transition = '';
+                        isAnimating = false;
+                    }, 300);
+                }, 150);
+            });
+            
+            isAnimating = true;
+        }
+
+        // Toggle between time display modes
+        function toggleTimeMode() {
+            // 기존 인터벌 정리
+            if (remainingTimeInterval) {
+                clearInterval(remainingTimeInterval);
+                remainingTimeInterval = null;
+            }
+            
+            // 모드 순환: now -> 5pm -> 6pm -> now
+            if (currentMode === 'now') {
+                currentMode = '5pm';
+            } else if (currentMode === '5pm') {
+                currentMode = '6pm';
+            } else {
+                currentMode = 'now';
+                
+                // NOW 모드로 돌아올 때 현재 시간으로 재설정
+                const now = new Date();
+                let hours = now.getHours();
+                const minutes = now.getMinutes();
+                const seconds = now.getSeconds();
+                
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                
+                currentTime = {
+                    hours: hours,
+                    minutes: minutes,
+                    seconds: seconds
+                };
+            }
+            
+            updateToggleButtonText();
+            updateClock();
+            saveSettings();
+        }
+
+        // Calculate and display remaining time until target hour
+        function showRemainingTimeUntilTarget(targetHour) {
+            const now = new Date();
+            const todayTarget = new Date();
+            todayTarget.setHours(targetHour, 0, 0, 0);
+            
+            let targetTime = todayTarget;
+            
+            if (now >= todayTarget) {
+                targetTime = new Date(todayTarget);
+                targetTime.setDate(targetTime.getDate() + 1);
+            }
+            
+            function updateRemainingTime() {
+                const now = new Date();
+                const timeDiff = targetTime - now;
+                
+                if (timeDiff <= 0) {
+                    setTimeDirectly({ hours: 0, minutes: 0, seconds: 0 });
+                    return;
+                }
+                
+                const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+                
+                setTimeDirectly({ hours, minutes, seconds });
+            }
+            
+            updateRemainingTime();
+            
+            if (!remainingTimeInterval) {
+                remainingTimeInterval = setInterval(updateRemainingTime, 1000);
+            }
+        }
+
+        // Update button text based on current mode
+        function updateToggleButtonText() {
+            if (currentMode === 'now') {
+                elements.toggleModeBtn.textContent = 'NOW';
+                elements.toggleModeBtn.title = '현재 시간 표시 중 (클릭하여 5시 카운트다운)';
+            } else if (currentMode === '5pm') {
+                elements.toggleModeBtn.textContent = '5PM';
+                elements.toggleModeBtn.title = '5시까지 남은 시간 (클릭하여 6시 카운트다운)';
+            } else if (currentMode === '6pm') {
+                elements.toggleModeBtn.textContent = '6PM';
+                elements.toggleModeBtn.title = '6시까지 남은 시간 (클릭하여 현재 시간)';
+            }
+        }
+
+        // 전체화면 토글
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().then(() => {
+                    isFullscreen = true;
+                    elements.toggleFullscreenBtn.textContent = '창모드';
+                    elements.fullscreenInfo.classList.add('show');
+                    setTimeout(() => {
+                        elements.fullscreenInfo.classList.remove('show');
+                    }, 3000);
+                }).catch(err => {
+                    console.log('전체화면 진입 실패:', err);
+                });
+            } else {
+                document.exitFullscreen().then(() => {
+                    isFullscreen = false;
+                    elements.toggleFullscreenBtn.textContent = '전체화면';
+                }).catch(err => {
+                    console.log('전체화면 종료 실패:', err);
+                });
+            }
+        }
+
+        // 도움말 토글
+        function toggleHelp() {
+            helpVisible = !helpVisible;
+            if (helpVisible) {
+                elements.shortcutsInfo.classList.add('show');
+                elements.toggleHelpBtn.textContent = '도움말 닫기';
+            } else {
+                elements.shortcutsInfo.classList.remove('show');
+                elements.toggleHelpBtn.textContent = '도움말';
+            }
+        }
+
+        // Load settings
+        function loadSettings() {
+            const savedMode = localStorage.getItem('clockMode');
+            if (savedMode && ['now', '5pm', '6pm'].includes(savedMode)) {
+                currentMode = savedMode;
+            }
+            updateToggleButtonText();
+        }
+
+        // Save settings
+        function saveSettings() {
+            localStorage.setItem('clockMode', currentMode);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // 버튼 이벤트
+            elements.toggleModeBtn.addEventListener('click', toggleTimeMode);
+            elements.toggleFullscreenBtn.addEventListener('click', toggleFullscreen);
+            elements.toggleHelpBtn.addEventListener('click', toggleHelp);
+            
+            // 키보드 이벤트
+            document.addEventListener('keydown', (event) => {
+                switch(event.key) {
+                    case 'F11':
+                        event.preventDefault();
+                        toggleFullscreen();
+                        break;
+                    case ' ':
+                    case 'Spacebar':
+                        event.preventDefault();
+                        toggleTimeMode();
+                        break;
+                    case 'h':
+                    case 'H':
+                        event.preventDefault();
+                        toggleHelp();
+                        break;
+                    case 'Escape':
+                        if (helpVisible) {
+                            toggleHelp();
+                        } else if (document.fullscreenElement) {
+                            document.exitFullscreen();
+                        }
+                        break;
+                }
+            });
+
+            // 전체화면 변경 이벤트
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement) {
+                    isFullscreen = false;
+                    elements.toggleFullscreenBtn.textContent = '전체화면';
+                    elements.fullscreenInfo.classList.remove('show');
+                }
+            });
+
+            // 창 포커스 이벤트
+            window.addEventListener('focus', () => {
+                updateClock();
+            });
+
+            // 페이지 가시성 변경 이벤트
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    updateClock();
+                }
+            });
+        }
+
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        // 페이지 로드 완료 시에도 초기화 (백업)
+        window.addEventListener('load', () => {
+            if (!isInitialized) {
+                initializeApp();
+            }
+        });
+    </script>
+</body>
+</html>

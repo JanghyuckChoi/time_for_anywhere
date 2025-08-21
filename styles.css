@@ -1,0 +1,346 @@
+/* 기본 리셋 및 폰트 설정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 스크롤바 숨기기 */
+::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', 'Courier New', monospace;
+    background: #000000;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* GPU acceleration */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+/* Main clock widget container - perfectly centered */
+.clock-widget {
+    width: 266px;  /* 380 * 0.7 */
+    height: 130px; /* Reduced height after removing current time display */
+    background: #000000;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    /* GPU acceleration */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    /* Animation optimization */
+    will-change: transform;
+}
+
+/* Date display removed for minimal design */
+
+/* Clock display container - centered and compact */
+.clock-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    /* GPU acceleration */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+/* Time separator - compact design */
+.time-separator {
+    color: #e0e0e0;
+    font-size: 24px; /* Reduced from 32px */
+    font-weight: bold;
+    margin: 0 4px;
+    animation: pulse 2s infinite;
+    /* GPU acceleration */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 1; 
+        -webkit-transform: translateZ(0) scale(1);
+        transform: translateZ(0) scale(1);
+    }
+    50% { 
+        opacity: 0.7; 
+        -webkit-transform: translateZ(0) scale(1.05);
+        transform: translateZ(0) scale(1.05);
+    }
+}
+
+/* Time modules (hours, minutes, seconds) - 70% size */
+.time-module {
+    width: 52px;  /* 75 * 0.7 */
+    height: 63px; /* 90 * 0.7 */
+    perspective: 1000px;
+    /* GPU acceleration */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+/* 플립 카드 */
+.flip-card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    /* GPU 가속 활성화 */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    /* 애니메이션 최적화 */
+    will-change: transform;
+}
+
+.flip-card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+    -webkit-transition: -webkit-transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.flip-card.flipping .flip-card-inner {
+    -webkit-transform: translateZ(0) rotateX(-180deg);
+    transform: translateZ(0) rotateX(-180deg);
+}
+
+/* Flip card front and back - compact design */
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px; /* Reduced from 42px for 70% size */
+    font-weight: bold;
+    color: #e0e0e0;
+    background: #141414;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px; /* Reduced from 8px */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    /* GPU acceleration */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    /* Animation optimization */
+    will-change: transform;
+}
+
+.flip-card-back {
+    -webkit-transform: translateZ(0) rotateX(180deg);
+    transform: translateZ(0) rotateX(180deg);
+    background: #1e1e1e;
+}
+
+/* 플립 카드 중간 구분선 - 다크 테마 기본 */
+.flip-card-front::after,
+.flip-card-back::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    -webkit-transform: translateZ(0) translateY(-50%);
+    transform: translateZ(0) translateY(-50%);
+}
+
+
+
+/* Motto removed for minimal design */
+
+
+
+
+
+/* 컨트롤 버튼들 */
+.control-buttons {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    gap: 8px;
+    -webkit-app-region: no-drag;
+    /* GPU 가속 활성화 */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+.control-btn {
+    min-width: 36px;
+    height: 24px;
+    padding: 0 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    -webkit-transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    /* GPU acceleration */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    /* Animation optimization */
+    will-change: transform, background-color, border-color;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    -webkit-transform: translateZ(0) scale(1.1);
+    transform: translateZ(0) scale(1.1);
+}
+
+/* 다크 테마 */
+.clock-widget.dark-theme {
+    background: #000000;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.clock-widget.dark-theme .date-display,
+.clock-widget.dark-theme .time-separator,
+.clock-widget.dark-theme .motto {
+    color: #e0e0e0;
+}
+
+.clock-widget.dark-theme .flip-card-front,
+.clock-widget.dark-theme .flip-card-back {
+    background: #141414;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+}
+
+.clock-widget.dark-theme .flip-card-back {
+    background: #1e1e1e;
+}
+
+.clock-widget.dark-theme .flip-card-front::after,
+.clock-widget.dark-theme .flip-card-back::after {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.clock-widget.dark-theme .control-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.clock-widget.dark-theme .control-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 애니메이션 효과 - GPU 가속 최적화 */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        -webkit-transform: translateZ(0) translateY(-20px);
+        transform: translateZ(0) translateY(-20px);
+    }
+    to { 
+        opacity: 1; 
+        -webkit-transform: translateZ(0) translateY(0);
+        transform: translateZ(0) translateY(0);
+    }
+}
+
+.clock-widget {
+    animation: fadeIn 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+    -webkit-animation: fadeIn 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 450px) {
+    .clock-widget {
+        width: 350px;
+        height: 250px;
+        padding: 15px;
+    }
+    
+    .time-module {
+        width: 70px;
+        height: 85px;
+    }
+    
+    .flip-card-front,
+    .flip-card-back {
+        font-size: 40px;
+    }
+    
+
+}
+
+/* 고해상도 디스플레이 지원 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .clock-widget {
+        border-width: 0.5px;
+    }
+    
+    .flip-card-front,
+    .flip-card-back {
+        border-width: 1px;
+    }
+}
+
+/* 성능 최적화를 위한 추가 스타일 */
+.flip-card {
+    /* GPU 가속을 위한 추가 속성 */
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+    /* 애니메이션 중 리플로우 방지 */
+    contain: layout style paint;
+}
+
+/* 애니메이션 중 불필요한 리페인트 방지 */
+.flip-card-front,
+.flip-card-back {
+    contain: layout style paint;
+}
+
+/* 부드러운 스크롤링 (필요한 경우) */
+html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 텍스트 렌더링 최적화 */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyTime - Desktop Clock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="clock-widget" id="clockWidget">
+        <!-- Main Clock Display -->
+        <div class="clock-display">
+            <div class="time-module" id="hoursModule">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front" id="hoursFront">23</div>
+                        <div class="flip-card-back" id="hoursBack">23</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="time-separator">:</div>
+            
+            <div class="time-module" id="minutesModule">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front" id="minutesFront">59</div>
+                        <div class="flip-card-back" id="minutesBack">59</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="time-separator">:</div>
+            
+            <div class="time-module" id="secondsModule">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front" id="secondsFront">59</div>
+                        <div class="flip-card-back" id="secondsBack">59</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Control Buttons -->
+        <div class="control-buttons">
+            <button id="toggleTheme" class="control-btn" title="Show remaining time (Right-click: Set time)">⏱️</button>
+            <button id="closeApp" class="control-btn" title="Close app">✕</button>
+        </div>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

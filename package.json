@@ -1,0 +1,59 @@
+{
+  "name": "mytime",
+  "version": "1.0.0",
+  "description": "Desktop flip clock widget with pomodoro timer",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "start:fast": "electron . --enable-features=VaapiVideoDecoder --ignore-gpu-blacklist --enable-gpu-rasterization --enable-zero-copy --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows",
+    "start:wsl": "electron . --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --disable-setuid-sandbox",
+    "start:wsl:fast": "electron . --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --disable-setuid-sandbox --enable-features=VaapiVideoDecoder --ignore-gpu-blacklist --enable-gpu-rasterization --enable-zero-copy --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows",
+    "start:wsl:safe": "electron . --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --disable-setuid-sandbox --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows --disable-ipc-flooding-protection --disable-features=VizDisplayCompositor",
+    "dev": "electron . --dev",
+    "dev:fast": "electron . --dev --enable-features=VaapiVideoDecoder --ignore-gpu-blacklist --enable-gpu-rasterization --enable-zero-copy --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows",
+    "dev:wsl": "electron . --dev --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --disable-setuid-sandbox",
+    "dev:wsl:fast": "electron . --dev --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --disable-setuid-sandbox --enable-features=VaapiVideoDecoder --ignore-gpu-blacklist --enable-gpu-rasterization --enable-zero-copy --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows",
+    "dev:wsl:safe": "electron . --dev --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --disable-setuid-sandbox --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows --disable-ipc-flooding-protection --disable-features=VizDisplayCompositor",
+    "build": "electron-builder",
+    "build:fast": "electron-builder --config.asar=false",
+    "dist": "electron-builder --publish=never",
+    "dist:fast": "electron-builder --publish=never --config.asar=false",
+    "profile": "electron . --dev --enable-logging --v=1 --vmodule=*/electron/*=4",
+    "benchmark": "node --max-old-space-size=4096 scripts/benchmark.js"
+  },
+  "keywords": ["electron", "clock", "widget", "pomodoro", "desktop"],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.mytime.app",
+    "productName": "MyTime",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/**/*",
+      "!scripts/**/*",
+      "!benchmark/**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "asar": true,
+    "compression": "maximum"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "electron": ">=28.0.0"
+  }
+}
